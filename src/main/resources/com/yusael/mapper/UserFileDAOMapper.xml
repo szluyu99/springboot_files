@@ -1,0 +1,35 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusael.dao.UserFileDAO">
+
+    <!--根据id查询对应的商品信息-->
+    <select id="findByUserId" parameterType="Integer" resultType="UserFile">
+        select id,oldFileName,newFileName,ext,path,size,type,isImg,downcounts,uploadTime,userId
+        from t_files
+        where userId = #{id}
+    </select>
+
+    <!--保存文件信息-->
+    <insert id="save" parameterType="UserFile">
+        insert into t_files
+        values (#{id},#{oldFileName},#{newFileName},#{ext},#{path},#{size},
+                #{type},#{isImg},#{downcounts},#{uploadTime},#{userId})
+    </insert>
+
+    <!--根据文件id找到文件信息-->
+    <select id="findById" parameterType="Integer" resultType="UserFile">
+        select id,oldFileName,newFileName,ext,path,size,type,isImg,downcounts,uploadTime,userId
+        from t_files
+        where id = #{id}
+    </select>
+
+    <!--更新文件下载次数-->
+    <update id="update" parameterType="UserFile">
+        update t_files set downcounts = #{downcounts} where id = #{id}
+    </update>
+
+    <!--删除数据库中的文件-->
+    <delete id="delete" parameterType="Integer">
+        delete from t_files
+        where id = #{id}
+    </delete>
+</mapper>

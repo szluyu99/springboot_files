@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户文件列表页面</title>
+    <script th:src="@{/js/jquery-3.5.0.min.js}"></script>
+    <script>
+        $(function () {
+            var time;
+            $('#start').click(function () {
+            console.log("开启定时更新");
+            time = setInterval(function () {
+                $.get("[[@{/file/findAllJSON}]]", function (res) {
+                    // 遍历
+                    $.each(res, function (index, file) {
+                        $('#' + file.id).text(file.downcounts);
+                    })
+                });
+            }, 3000);
+        });
+
+            $("#stop").click(function () {
+                console.log("关闭定时更新");
+                clearInterval(time);
+            });
+        });
+    </script>
+</head>
+<body>
+<h1>欢迎: <span th:if="${session.user != null}" th:text="${session.user.username}"/></h1>
+<h2>文件列表:</h2>
+<button id="start">开启定时更新</button>
+<button id="stop">结束定时更新</button>
+<table border="1px">
+    <tr>
+        <th>ID</th>
+        <th>文件原始名称</th>
+        <th>文件的新名称</th>
+        <th>文件后缀</th>
+        <th>存储路径</th>
+        <th>文件大小</th>
+        <th>类型</th>
+        <th>是否图片</th>
+        <th>下载次数</th>
+        <th>上传时间</th>
+        <th>操作</th>
+    </tr>
+    <tr th:each="file : ${files}" >
+        <td><span th:text="${file.id}"/></td>
+        <td><span th:text="${file.oldFileName}"/></td>
+        <td><span th:text="${file.newFileName}"/></td>
+        <td><span th:text="${file.ext}"/></td>
+        <td><span th:text="${file.path}"/></td>
+        <td><span th:text="${file.size}"/></td>
+        <td><span th:text="${file.type}"/></td>
+        <td>
+            <span th:text="${file.isImg}"/>
+            <img th:if="${file.isImg}=='是'" style="height: 40px;height: 100px" th:src="${#servletContext.contextPath} + ${file.path} + '/' + ${file.newFileName}" alt="">
+        </td>
+        <td th:id="${file.id}"><span th:text="${file.downcounts}"/></td>
+        <td><span th:text="${#dates.format(file.uploadTime, 'yyyy-MM-dd hh:mm:ss')}"/></td>
+        <td>
+            <a th:href="@{/file/download(id=${file.id})}">下载</a>
+            <a th:href="@{/file/download(id=${file.id},openStyle='inline')}">在线打开</a>
+            <a th:href="@{/file/delete(id=${file.id})}">删除</a>
+        </td>
+    </tr>
+</table>
+<hr>
+<h3>上传列表</h3>
+<form th:action="@{/file/upload}" method="post" enctype="multipart/form-data">
+    <input type="file" name="aaa">
+    <input type="submit" value="上传文件">
+</form>
+</body>
+</html>
